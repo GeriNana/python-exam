@@ -1,0 +1,86 @@
+.d-flex{
+    display: flex;
+}
+.flex-row{
+    flex-direction: row;
+}
+.butona, .buton{
+    text-decoration: none;
+    color: black;
+    border: 2px solid black;
+    width: 120px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    left: 1000px;
+}
+.buton{
+    width: 80px;
+    position: relative;
+    left: 1040px;
+}
+.justify-content-between{
+    justify-content: space-between;
+}
+.flex-column{
+    flex-direction: column;
+}
+.container{
+    width: 90%;
+    margin: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+button {
+    margin-right: 5px;
+}
+.w-120 {
+    width: 180px;
+    text-align: center;
+    position: relative;
+    left: 940px;
+}
+.w-80 {
+    width: 80px;
+    text-align: center;
+    position: relative;
+    left: 1040px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+table th, table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+table th {
+    background-color: #f2f2f2;
+}
+.btn-container {
+    display: flex;
+    gap: 10px;
+}
+.sighting-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
