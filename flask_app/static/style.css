@@ -2,11 +2,11 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f2f2f2; /* Light grey background */
+    background-color: #f2f2f2;
 }
 
 header {
-    background-color: #ffffff; /* White navbar background */
+    background-color: #ffffff;
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -49,7 +49,7 @@ nav {
 .menu-toggle span {
     height: 2px;
     width: 25px;
-    background-color: #333; /* Dark color for menu toggle lines */
+    background-color: #333;
     margin: 5px;
     transition: all 0.3s ease;
 }
@@ -97,10 +97,10 @@ nav {
 }
 
 .hero-content {
-    max-width: 60%; /* Increase the width */
+    max-width: 60%;
     min-width: 700px;
     height: 100%;
-    min-height: 600px; /* Increase the height */
+    min-height: 600px;
     border-top-right-radius: 50%;
     border-bottom-right-radius: 50%;
     background-color: #022634;
@@ -112,12 +112,12 @@ nav {
 
 .hero-content h1 {
     font-size: 48px;
-    color: #fff; /* White text color for contrast */
+    color: #fff;
 }
 
 .hero-content p {
     font-size: 24px;
-    color: #fff; /* White text color for contrast */
+    color: #fff; 
     border-right: 5px solid white;
 }
 
@@ -189,7 +189,7 @@ nav {
 }
 
 .step img {
-    width: 80px; /* Adjust the size of the logos */
+    width: 80px;
     height: 80px;
     margin-bottom: 10px;
 }
@@ -219,7 +219,7 @@ nav {
     }
 
     .step img {
-        width: 70px; /* Adjust the size of the logos for smaller screens */
+        width: 70px;
         height: 70px;
 
     }
@@ -235,7 +235,7 @@ nav {
         max-width: 100%;
         min-width: unset;
         margin-bottom: 20px;
-        min-height: unset; /* Reset height for smaller screens */
+        min-height: unset;
         border-radius: 0;
     }
 
@@ -260,7 +260,7 @@ nav {
     }
 
     .dropdown-menu {
-        top: 60px; /* Adjust top position */
+        top: 60px;
         right: 20px;
     }
 
@@ -274,7 +274,7 @@ nav {
     }
 
     .step img {
-        width: 60px; /* Adjust the size of the logos for smaller screens */
+        width: 60px;
         height: 60px;
     }
 }
