@@ -1,50 +1,64 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask import flash
 import re
+from flask_bcrypt import Bcrypt
+from flask_app import app
 
-EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+bcrypt = Bcrypt(app)
 
 class User:
-    db_name = "gastroglide"
-
     def __init__(self, data):
-        self.id = data['id']
+        self.id = data['user_id']
         self.username = data['username']
         self.password = data['password']
         self.email = data['email']
-        self.full_name = data['full_name']
-        self.address = data['address']
-        self.city = data['city']
-        self.postal_code = data['postal_code']
-        self.phone = data['phone']
-        self.preferred_payment_method = data['preferred_payment_method']
-        self.created_at = data['created_at']
-        self.updated_at = data['updated_at']
+        self.full_name = data.get('full_name')
+        self.address = data.get('address')
+        self.city = data.get('city')
+        self.postal_code = data.get('postal_code')
+        self.phone = data.get('phone')
+        self.preferred_payment_method = data.get('preferred_payment_method')
 
     @classmethod
     def save(cls, data):
-        query = """
-        INSERT INTO users (username, password, email, full_name, address, city, postal_code, phone, preferred_payment_method, created_at, updated_at)
-        VALUES (%(username)s, %(password)s, %(email)s, %(full_name)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s, %(preferred_payment_method)s, NOW(), NOW());
-        """
-        return connectToMySQL(cls.db_name).query_db(query, data)
-    
+        query = "INSERT INTO users (username, password, email, full_name, address, city, postal_code, phone) VALUES (%(username)s, %(password)s, %(email)s, %(full_name)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s);"
+        return connectToMySQL('gastroglide').query_db(query, data)
+
+    @classmethod
+    def get_by_email(cls, email):
+        query = "SELECT * FROM users WHERE email = %(email)s;"
+        result = connectToMySQL('gastroglide').query_db(query, {'email': email})
+        if not result:
+            return None
+        return cls(result[0])
+
+    @staticmethod
+    def validate_registration(form_data):
+        is_valid = True
+        if len(form_data['username']) < 3:
+            flash("Username must be at least 3 characters.", "register")
+            is_valid = False
+        if len(form_data['password']) < 8:
+            flash("Password must be at least 8 characters.", "register")
+            is_valid = False
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", form_data['email']):
+            flash("Invalid email address.", "register")
+            is_valid = False
+        if User.get_by_email(form_data['email']):
+            flash("Email already taken.", "register")
+            is_valid = False
+        return is_valid
 
 
     @classmethod
-    def validate_registration(cls, data):
-        is_valid = True
+    def check_password(cls, stored_password, provided_password):
+        return stored_password == provided_password
 
-        if len(data['username']) < 3:
-            flash("Username must be at least 3 characters long.")
-            is_valid = False
-
-        if not EMAIL_REGEX.match(data['email']):
-            flash("Invalid email address.")
-            is_valid = False
-
-        if len(data['password']) < 6:
-            flash("Password must be at least 6 characters long.")
-            is_valid = False
-
-        return is_valid
+    @classmethod
+    def get_by_id(cls, user_id):
+        query = "SELECT * FROM users WHERE id = %(id)s;"
+        data = {'id': user_id}
+        result = connectToMySQL('gastroglide').query_db(query, data)
+        if not result:
+            return None
+        return cls(result[0])

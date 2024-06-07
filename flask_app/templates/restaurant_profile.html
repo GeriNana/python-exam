@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ restaurant.name }}</h1>
+    <a href="{{ url_for('restaurants.logout') }}">Logout</a>
+    <a href="{{ url_for('menus.add_menu', restaurant_id=restaurant.id) }}">Add Menu</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Welcome, {{ restaurant.name }}</h1>
+        <h2>Your Details</h2>
+        <p>Address: {{ restaurant.address }}</p>
+        <p>City: {{ restaurant.city }}</p>
+        <p>Postal Code: {{ restaurant.postal_code }}</p>
+        <p>Phone: {{ restaurant.phone }}</p>
+        <p>Email: {{ restaurant.email }}</p>
+
+        <h2>Your Menu</h2>
+        <ul>
+            {% for item in menu %}
+            <li>{{ item.name }} - {{ item.price }}</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{{ url_for('menus.add', restaurant_id=restaurant.id) }}">Add Menu</a>
+    </main>
+
+    <footer>
+        <!-- Footer content -->
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

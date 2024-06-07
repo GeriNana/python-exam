@@ -1,35 +1,18 @@
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, render_template, redirect, request, session, flash
 from flask_app.models.menu import Menu
-from flask_bcrypt import Bcrypt
-# Create a Blueprint for the menu routes
-bp = Blueprint('menus', __name__)
 
+bp = Blueprint('menus', __name__, url_prefix='/menus')
 
-def create_menu():
-    data = {
-        "restaurant_id": request.form["restaurant_id"],
-        "name": request.form["name"],
-        "description": request.form["description"],
-        "price": request.form["price"],
-        "image_url": request.form["image_url"]
-    }
-    Menu.save(data)
-    return redirect('/')
-
-
-# Define your routes using the Blueprint object
-@bp.route('/create_menu', methods=['POST'])
-def create_menu():
-    data = {
-        "restaurant_id": request.form["restaurant_id"],
-        "name": request.form["name"],
-        "description": request.form["description"],
-        "price": request.form["price"]
-    }
-    Menu.save(data)
-    return redirect('/')
-
-@bp.route('/menus/<int:menu_id>', methods=['GET'])
-def get_menu(menu_id):
-    menu = Menu.get_by_id(menu_id)
-    return render_template('menu.html', menu=menu)
+@bp.route('/add/<int:restaurant_id>', methods=['GET', 'POST'])
+def add_menu(restaurant_id):
+    if request.method == 'POST':
+        data = {
+            "restaurant_id": restaurant_id,
+            "name": request.form["name"],
+            "description": request.form.get("description"),
+            "price": request.form["price"],
+            "image_url": request.form.get("image_url")
+        }
+        Menu.save(data)
+        return redirect(f'/restaurants/profile/{restaurant_id}')
+    return render_template('add_menu.html', restaurant_id=restaurant_id)

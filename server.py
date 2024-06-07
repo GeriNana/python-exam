@@ -1,17 +1,11 @@
 import os
 from flask import Flask, render_template
 from flask_app.controllers import users, restaurants, menus, orders, couriers
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='flask_app/templates', static_folder='flask_app/static')
 app.secret_key = 'your_secret_key'  # Change this to a real secret key
 
-# Debugging prints
-print("Current working directory:", os.getcwd())
-print("Templates directory contents:", os.listdir('flask_app/templates'))
-print("Static directory contents:", os.listdir('flask_app/static'))
-print("CSS directory contents:", os.listdir('flask_app/static/css'))
-print("JS directory contents:", os.listdir('flask_app/static/js'))
-print("Images directory contents:", os.listdir('flask_app/static/images'))
 
 @app.route('/')
 def index():

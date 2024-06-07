@@ -1,31 +1,104 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask import flash
-
 class Restaurant:
     db_name = "gastroglide"
 
     def __init__(self, data):
-        self.id = data['id']
+        self.id = data['restaurant_id']
         self.name = data['name']
-        self.address = data['address']
-        self.city = data['city']
-        self.postal_code = data['postal_code']
-        self.phone = data['phone']
+        self.address = data.get('address')
+        self.city = data.get('city')
+        self.postal_code = data.get('postal_code')
+        self.phone = data.get('phone')
         self.email = data['email']
-        self.logo_url = data['logo_url']
-        self.created_at = data['created_at']
-        self.updated_at = data['updated_at']
+        # Remove the logo_url if not used
+
 
     @classmethod
     def save(cls, data):
-        query = "INSERT INTO restaurants (name, address, city, postal_code, phone, email, logo_url, created_at, updated_at) VALUES (%(name)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s, %(email)s, %(logo_url)s, NOW(), NOW());"
-        return connectToMySQL(cls.db_name).query_db(query, data)
+        query = """
+        INSERT INTO restaurants (name, address, city, postal_code, phone, email)
+        VALUES (%(name)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s, %(email)s);
+        """
+        print(f"Executing query: {query}")
+        result = connectToMySQL('gastroglide').query_db(query, data)
+        print(f"Result of query: {result}")
+        return result
+
+    @classmethod
+    def get_by_email(cls, email):
+        query = "SELECT * FROM restaurants WHERE email = %(email)s;"
+        results = connectToMySQL(cls.db_name).query_db(query, {'email': email})
+        if len(results) < 1:
+            return False
+        return cls(results[0])
+
+    @classmethod
+    def get_by_id(cls, restaurant_id):
+        query = "SELECT * FROM restaurants WHERE restaurant_id = %(restaurant_id)s;"
+        data = {"restaurant_id": restaurant_id}
+        results = connectToMySQL('gastroglide').query_db(query, data)
+        if len(results) < 1:
+            return False
+        return cls(results[0])
 
     @classmethod
     def get_by_location(cls, location):
         query = "SELECT * FROM restaurants WHERE city = %(location)s;"
         results = connectToMySQL(cls.db_name).query_db(query, {'location': location})
         restaurants = []
-        for row in results:
-            restaurants.append(cls(row))
+        for result in results:
+            restaurants.append(cls(result))
         return restaurants
+
+    @staticmethod
+    def validate_registration(form_data):
+        is_valid = True
+        errors = []
+
+        # Check name length
+        if len(form_data['name']) < 2:
+            is_valid = False
+            errors.append("Name must be at least 2 characters.")
+
+        # Check if email is valid and unique
+        if 'email' not in form_data or not form_data['email']:
+            is_valid = False
+            errors.append("Email is required.")
+        else:
+            email_query = "SELECT * FROM restaurants WHERE email = %(email)s;"
+            email_data = {"email": form_data['email']}
+            email_results = connectToMySQL('gastroglide').query_db(email_query, email_data)
+            if len(email_results) > 0:
+                is_valid = False
+                errors.append("Email is already in use.")
+
+        # Check if phone number is provided
+        if 'phone' not in form_data or not form_data['phone']:
+            is_valid = False
+            errors.append("Phone number is required.")
+
+        # Check address length
+        if 'address' in form_data and form_data['address'] and len(form_data['address']) < 5:
+            is_valid = False
+            errors.append("Address must be at least 5 characters.")
+
+        # Check city length
+        if 'city' in form_data and form_data['city'] and len(form_data['city']) < 2:
+            is_valid = False
+            errors.append("City must be at least 2 characters.")
+
+        # Check postal code length
+        if 'postal_code' in form_data and form_data['postal_code'] and len(form_data['postal_code']) < 3:
+            is_valid = False
+            errors.append("Postal code must be at least 3 characters.")
+
+        if not is_valid:
+            for error in errors:
+                flash(error, 'register')
+
+        return is_valid
+        
+        print(f"Validation result: {is_valid}")
+        return is_valid
+
