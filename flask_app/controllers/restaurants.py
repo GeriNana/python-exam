@@ -36,16 +36,15 @@ def restaurant_profile(restaurant_id):
 def login():
     if request.method == 'POST':
         data = {
-            "email": request.form["email"],
-            "password": request.form["password"]
+            "email": request.form["email"]
         }
         restaurant = Restaurant.get_by_email(data["email"])
-        if not restaurant or not Restaurant.check_password(restaurant.password, data["password"]):
-            flash("Invalid Email/Password", "danger")
+        if not restaurant:
+            flash("Invalid Email", "danger")
             return redirect('/restaurants/login')
         
-        session['restaurant_id'] = restaurant.restaurant_id
-        return redirect(f'/restaurants/profile/{restaurant.restaurant_id}')
+        session['restaurant_id'] = restaurant.id
+        return redirect(f'/restaurants/profile/{restaurant.id}')
     return render_template('login.html')
 
 @bp.route('/logout')
