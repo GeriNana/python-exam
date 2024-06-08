@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template
-from flask_app.controllers import users, restaurants, menus, orders, couriers
+from flask_app.controllers import users, restaurants, menus, orders, couriers, dishes
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='flask_app/templates', static_folder='flask_app/static')
@@ -17,6 +17,7 @@ app.register_blueprint(restaurants.bp, url_prefix='/restaurants')
 app.register_blueprint(menus.bp, url_prefix='/menus')
 app.register_blueprint(orders.bp, url_prefix='/orders')
 app.register_blueprint(couriers.bp, url_prefix='/couriers')
+app.register_blueprint(dishes.bp, url_prefix='/dishes')
 
 if __name__ == "__main__":
     app.run(debug=True)

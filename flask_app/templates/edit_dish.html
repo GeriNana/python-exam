@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Dish</title>
+</head>
+<body>
+    <h1>Edit Dish</h1>
+    <form action="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}" method="POST">
+        <label for="name">Dish Name:</label>
+        <input type="text" id="name" name="name" value="{{ dish.name }}" required><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description">{{ dish.description }}</textarea><br>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" value="{{ dish.price }}" required><br>
+        <label for="image_url">Image URL:</label>
+        <input type="url" id="image_url" name="image_url" value="{{ dish.image_url }}"><br>
+        <button type="submit">Update Dish</button>
+    </form>
+    <a href="{{ url_for('menus.view_menu', menu_id=dish.menu_id) }}">Back to Menu</a>
+</body>
+</html>

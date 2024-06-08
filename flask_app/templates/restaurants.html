@@ -3,57 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurants in {{ location }}</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Restaurants</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
-            </div>
-            <div class="menu-and-courier">
-                <a href="{{ url_for('restaurants.show_restaurant_form') }}" class="courier-link">Become a Courier</a>
-                <div class="language-toggle">
-                    <select id="languageSelect">
-                        <option value="en">English</option>
-                        <option value="sq">Shqip</option>
-                    </select>
-                </div>
-                <div class="menu-toggle" id="menuToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <div class="dropdown-row">
-                    <a href="{{ url_for('users.login') }}">Login</a>
-                    <a href="{{ url_for('users.register') }}">Register</a>
-                </div>
-                <a href="{{ url_for('help') }}">Need Help?</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <h1>Restaurants in {{ location }}</h1>
-        <div class="restaurant-list">
-            {% for restaurant in restaurants %}
-                <div class="restaurant">
-                    <h2>{{ restaurant.name }}</h2>
-                    <p>{{ restaurant.address }}</p>
-                    <p>{{ restaurant.city }}</p>
-                    <p>{{ restaurant.phone }}</p>
-                    <img src="{{ restaurant.logo_url }}" alt="{{ restaurant.name }} logo">
-                </div>
-            {% endfor %}
-        </div>
-    </main>
-
-    <footer>
-        <!-- Footer content -->
-    </footer>
+    <h1>Restaurants</h1>
+    <ul>
+        {% for restaurant in restaurants %}
+            <li>
+                <h2>{{ restaurant.name }}</h2>
+                <p>Address: {{ restaurant.address }}</p>
+                <p>City: {{ restaurant.city }}</p>
+                <p>Phone: {{ restaurant.phone }}</p>
+                <h3>Menus</h3>
+                <ul>
+                    {% for menu in restaurant.menus %}
+                        <li>
+                            {{ menu.name }} - {{ menu.price }}
+                            <a href="{{ url_for('menus.view_menu', menu_id=menu.id) }}">View</a>
+                        </li>
+                        <ul>
+                            {% for dish in menu.dishes %}
+                                <li>{{ dish.name }} - {{ dish.price }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

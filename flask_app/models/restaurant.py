@@ -1,5 +1,7 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask import flash
+from flask_app.models.menu import Menu
+
 class Restaurant:
     db_name = "gastroglide"
 
@@ -11,8 +13,7 @@ class Restaurant:
         self.postal_code = data.get('postal_code')
         self.phone = data.get('phone')
         self.email = data['email']
-        # Remove the logo_url if not used
-
+        self.menus = []
 
     @classmethod
     def save(cls, data):
@@ -20,24 +21,32 @@ class Restaurant:
         INSERT INTO restaurants (name, address, city, postal_code, phone, email)
         VALUES (%(name)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s, %(email)s);
         """
-        print(f"Executing query: {query}")
-        result = connectToMySQL('gastroglide').query_db(query, data)
-        print(f"Result of query: {result}")
-        return result
-
-    @classmethod
-    def get_by_email(cls, email):
-        query = "SELECT * FROM restaurants WHERE email = %(email)s;"
-        results = connectToMySQL(cls.db_name).query_db(query, {'email': email})
-        if len(results) < 1:
-            return False
-        return cls(results[0])
+        return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
     def get_by_id(cls, restaurant_id):
         query = "SELECT * FROM restaurants WHERE restaurant_id = %(restaurant_id)s;"
         data = {"restaurant_id": restaurant_id}
-        results = connectToMySQL('gastroglide').query_db(query, data)
+        result = connectToMySQL(cls.db_name).query_db(query, data)
+        if not result:
+            return None
+        restaurant = cls(result[0])
+        restaurant.menus = cls.get_menus(restaurant_id)
+        return restaurant
+
+    @classmethod
+    def get_menus(cls, restaurant_id):
+        query = "SELECT * FROM menus WHERE restaurant_id = %(restaurant_id)s;"
+        results = connectToMySQL(cls.db_name).query_db(query, {"restaurant_id": restaurant_id})
+        menus = []
+        for menu in results:
+            menus.append(Menu(menu))
+        return menus
+
+    @classmethod
+    def get_by_email(cls, email):
+        query = "SELECT * FROM restaurants WHERE email = %(email)s;"
+        results = connectToMySQL(cls.db_name).query_db(query, {'email': email})
         if len(results) < 1:
             return False
         return cls(results[0])
@@ -98,7 +107,3 @@ class Restaurant:
                 flash(error, 'register')
 
         return is_valid
-        
-        print(f"Validation result: {is_valid}")
-        return is_valid
-

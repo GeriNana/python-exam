@@ -4,38 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Welcome, {{ restaurant.name }}</h1>
-    <a href="{{ url_for('restaurants.logout') }}">Logout</a>
-    <a href="{{ url_for('menus.add_menu', restaurant_id=restaurant.id) }}">Add Menu</a>
-        </nav>
-    </header>
+    <h1>{{ restaurant.name }}</h1>
+    <p>Address: {{ restaurant.address }}</p>
+    <p>City: {{ restaurant.city }}</p>
+    <p>Postal Code: {{ restaurant.postal_code }}</p>
+    <p>Phone: {{ restaurant.phone }}</p>
+    <p>Email: {{ restaurant.email }}</p>
 
-    <main>
-        <h1>Welcome, {{ restaurant.name }}</h1>
-        <h2>Your Details</h2>
-        <p>Address: {{ restaurant.address }}</p>
-        <p>City: {{ restaurant.city }}</p>
-        <p>Postal Code: {{ restaurant.postal_code }}</p>
-        <p>Phone: {{ restaurant.phone }}</p>
-        <p>Email: {{ restaurant.email }}</p>
-
-        <h2>Your Menu</h2>
-        <ul>
-            {% for item in menu %}
-            <li>{{ item.name }} - {{ item.price }}</li>
+    <h2>Menus</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Menu Name</th>
+                <th>Image</th>
+                <th>Min Order Amount</th>
+                <th>Avg Preparation Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for menu in restaurant.menus %}
+            <tr>
+                <td>{{ menu.restaurant_name }}</td>
+                <td><img src="{{ menu.image_url }}" alt="Menu Image" width="100"></td>
+                <td>${{ menu.min_order_amount }}</td>
+                <td>{{ menu.avg_preparation_time }} minutes</td>
+                <td>
+                    <a href="{{ url_for('menus.view_menu', menu_id=menu.id) }}">View Menu</a>
+                    <a href="{{ url_for('menus.edit_menu', menu_id=menu.id) }}">Edit Menu</a>
+                    <form action="{{ url_for('menus.delete_menu', menu_id=menu.id) }}" method="POST" style="display:inline;">
+                        <button type="submit">Delete Menu</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
-        </ul>
-
-        <a href="{{ url_for('menus.add', restaurant_id=restaurant.id) }}">Add Menu</a>
-    </main>
-
-    <footer>
-        <!-- Footer content -->
-    </footer>
-
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        </tbody>
+    </table>
+    <a href="{{ url_for('menus.add_menu', restaurant_id=restaurant.id) }}">Add Menu</a>
 </body>
 </html>

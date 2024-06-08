@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Menu</title>
+</head>
+<body>
+    <h1>{{ menu.restaurant_name }}</h1>
+    <img src="{{ menu.image_url }}" alt="Menu Image">
+    <p>Minimum Order Amount: ${{ menu.min_order_amount }}</p>
+    <p>Average Preparation Time: {{ menu.avg_preparation_time }} minutes</p>
+
+    <h2>Dishes</h2>
+    <ul>
+        {% for dish in menu.dishes %}
+        <li>{{ dish.name }} - ${{ dish.price }}<br>{{ dish.description }}</li>
+        <a href="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}">Edit</a>
+        <form action="{{ url_for('dishes.delete_dish', dish_id=dish.id) }}" method="POST">
+            <button type="submit">Delete</button>
+        </form>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('dishes.add_dish', menu_id=menu.id) }}">Add Dish</a>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Dish</title>
+</head>
+<body>
+    <h1>Add Dish to Menu ID {{ menu_id }}</h1>
+    <form action="{{ url_for('dishes.add_dish', menu_id=menu_id) }}" method="POST">
+        <label for="name">Dish Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea><br>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" required><br>
+        <label for="image_url">Image URL:</label>
+        <input type="url" id="image_url" name="image_url"><br>
+        <button type="submit">Add Dish</button>
+    </form>
+    <a href="{{ url_for('menus.view_menu', menu_id=menu_id) }}">Back to Menu</a>
+</body>
+</html>
