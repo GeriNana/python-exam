@@ -24,4 +24,4 @@ class UserFavorite:
             return cls(result[0])
         return None
 
-    # Add more methods as needed
+

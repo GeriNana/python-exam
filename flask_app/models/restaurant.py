@@ -57,8 +57,22 @@ class Restaurant:
         results = connectToMySQL(cls.db_name).query_db(query, {'location': location})
         restaurants = []
         for result in results:
-            restaurants.append(cls(result))
+            restaurant = cls(result)
+            restaurant.menus = cls.get_menus(result['restaurant_id'])
+            restaurants.append(restaurant)
         return restaurants
+
+    def get_average_preparation_time(self):
+        if not self.menus:
+            return None
+        total_time = sum(menu.avg_preparation_time for menu in self.menus if menu.avg_preparation_time)
+        return total_time // len(self.menus) if self.menus else 0
+
+    def get_min_order_amount(self):
+        if not self.menus:
+            return None
+        min_order = min(menu.min_order_amount for menu in self.menus if menu.min_order_amount)
+        return min_order if self.menus else 0
 
     @staticmethod
     def validate_registration(form_data):

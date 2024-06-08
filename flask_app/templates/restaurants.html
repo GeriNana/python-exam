@@ -3,36 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurants</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Restaurants in {{ location }}</title>
 </head>
 <body>
-    <h1>Restaurants</h1>
-    <ul>
-        {% for restaurant in restaurants %}
-            <li>
-                <h2>{{ restaurant.name }}</h2>
-                <p>Address: {{ restaurant.address }}</p>
-                <p>City: {{ restaurant.city }}</p>
-                <p>Phone: {{ restaurant.phone }}</p>
-                <h3>Menus</h3>
-                <ul>
-                    {% for menu in restaurant.menus %}
-                        <li>
-                            {{ menu.name }} - {{ menu.price }}
-                            <a href="{{ url_for('menus.view_menu', menu_id=menu.id) }}">View</a>
-                        </li>
-                        <ul>
-                            {% for dish in menu.dishes %}
-                                <li>{{ dish.name }} - {{ dish.price }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <h1>Restaurants in {{ location }}</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Restaurant Name</th>
+                <th>Average Preparation Time</th>
+                <th>Minimum Order Amount</th>
+                <th>Menu</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for restaurant in restaurants %}
+            <tr>
+                <td>{{ restaurant.name }}</td>
+                <td>{{ restaurant.get_average_preparation_time() }} minutes</td>
+                <td>${{ restaurant.get_min_order_amount() }}</td>
+                <td>
+                    <a href="{{ url_for('restaurants.show_menu', restaurant_id=restaurant.id) }}">View Menu</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

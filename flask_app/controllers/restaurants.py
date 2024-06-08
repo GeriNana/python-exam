@@ -62,3 +62,10 @@ def search_restaurants():
 def show_restaurants(location):
     restaurants = Restaurant.get_by_location(location)
     return render_template('restaurants.html', location=location, restaurants=restaurants)
+
+@bp.route('/menu/<int:restaurant_id>', methods=['GET'])
+def show_menu(restaurant_id):
+    restaurant = Restaurant.get_by_id(restaurant_id)
+    if not restaurant:
+        return "Restaurant not found", 404
+    return render_template('show_menu.html', restaurant=restaurant, menus=restaurant.menus)
