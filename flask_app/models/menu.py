@@ -11,7 +11,7 @@ class Menu:
         self.restaurant_name = data['restaurant_name']
         self.min_order_amount = data['min_order_amount']
         self.avg_preparation_time = data['avg_preparation_time']
-        self.dishes = []
+        self.dishes = Dish.get_by_menu_id(data['id'])
 
     @classmethod
     def save(cls, data):

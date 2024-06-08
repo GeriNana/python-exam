@@ -12,15 +12,33 @@
     <p>Average Preparation Time: {{ menu.avg_preparation_time }} minutes</p>
 
     <h2>Dishes</h2>
-    <ul>
-        {% for dish in menu.dishes %}
-        <li>{{ dish.name }} - ${{ dish.price }}<br>{{ dish.description }}</li>
-        <a href="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}">Edit</a>
-        <form action="{{ url_for('dishes.delete_dish', dish_id=dish.id) }}" method="POST">
-            <button type="submit">Delete</button>
-        </form>
-        {% endfor %}
-    </ul>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Dish Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dish in menu.dishes %}
+            <tr>
+                <td>{{ dish.name }}</td>
+                <td>{{ dish.description }}</td>
+                <td>${{ dish.price }}</td>
+                <td><img src="{{ dish.image_url }}" alt="Dish Image" width="100"></td>
+                <td>
+                    <a href="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}">Edit</a>
+                    <form action="{{ url_for('dishes.delete_dish', dish_id=dish.id) }}" method="POST" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <a href="{{ url_for('dishes.add_dish', menu_id=menu.id) }}">Add Dish</a>
 </body>
 </html>
