@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, redirect, request, session, flash
+from flask import Blueprint, render_template, redirect, request, session, flash, url_for
+from flask_app.models.menu import Menu
 from flask_app.models.restaurant import Restaurant
+
 
 bp = Blueprint('restaurants', __name__, url_prefix='/restaurants')
 
@@ -56,16 +58,18 @@ def logout():
 @bp.route('/search', methods=['GET'])
 def search_restaurants():
     location = request.args.get('location')
-    return redirect(f'/restaurants/location/{location}')
+    return redirect(url_for('restaurants.show_restaurants', location=location))
 
-@bp.route('/location/<location>', methods=['GET'])
+@bp.route('/location/<string:location>')
 def show_restaurants(location):
     restaurants = Restaurant.get_by_location(location)
+    for restaurant in restaurants:
+        restaurant.menus = Menu.get_by_restaurant_id(restaurant.id)
     return render_template('restaurants.html', location=location, restaurants=restaurants)
 
-@bp.route('/menu/<int:restaurant_id>', methods=['GET'])
-def show_menu(restaurant_id):
-    restaurant = Restaurant.get_by_id(restaurant_id)
-    if not restaurant:
-        return "Restaurant not found", 404
-    return render_template('show_menu.html', restaurant=restaurant, menus=restaurant.menus)
+@bp.route('/menu/<int:menu_id>')
+def show_menu(menu_id):
+    menu = Menu.get_by_id(menu_id)
+    if not menu:
+        return "Menu not found", 404
+    return render_template('show_menu.html', menu=menu)

@@ -1,2 +1,2 @@
-SELECT * FROM gastroglide.restaurants;
+DESCRIBE restaurants;
 DESCRIBE menus;

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, session, flash
 from flask_app.models.menu import Menu
+from flask_app.models.restaurant import Restaurant
 
 bp = Blueprint('menus', __name__, url_prefix='/menus')
 
@@ -17,10 +18,12 @@ def add_menu(restaurant_id):
         return redirect(f'/restaurants/profile/{restaurant_id}')
     return render_template('add_menu.html', restaurant_id=restaurant_id)
 
-@bp.route('/view_menu/<int:restaurant_id>')
-def view_menu(restaurant_id):
-    restaurant = Restaurant.get_by_id(restaurant_id)
-    return render_template('view_menu.html', menus=restaurant.menus)
+@bp.route('/view_menu/<int:menu_id>')
+def view_menu(menu_id):
+    menu = Menu.get_by_id(menu_id)
+    if not menu:
+        return "Menu not found", 404
+    return render_template('show_menu.html', menu=menu)
 
 @bp.route('/edit_menu/<int:menu_id>', methods=['GET', 'POST'])
 def edit_menu(menu_id):
@@ -36,7 +39,7 @@ def edit_menu(menu_id):
             "avg_preparation_time": request.form["avg_preparation_time"]
         }
         Menu.update(data)
-        return redirect(f'/menus/view_menu/{menu.restaurant_id}')
+        return redirect(f'/menus/view_menu/{menu_id}')
     return render_template('edit_menu.html', menu=menu)
 
 @bp.route('/delete_menu/<int:menu_id>', methods=['POST'])

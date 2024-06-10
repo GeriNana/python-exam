@@ -1,5 +1,4 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask import flash
 
 class UserPastOrder:
     db_name = "gastroglide"
@@ -23,5 +22,3 @@ class UserPastOrder:
         if result:
             return cls(result[0])
         return None
-
-

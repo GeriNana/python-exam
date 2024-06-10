@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu for {{ restaurant.name }}</title>
+    <title>Menu for {{ menu.restaurant_name }}</title>
     <script>
         let basket = {};
         let totalPrice = 0;
@@ -38,12 +38,31 @@
             localStorage.setItem('basket', JSON.stringify(basket));
             window.location.href = '/orders/checkout';
         }
+
+        function markAsFavorite(dishId) {
+            fetch('/favorites/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ dish_id: dishId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Dish marked as favorite!');
+                } else {
+                    alert('Failed to mark as favorite.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </head>
 <body>
-    <h1>Menu for {{ restaurant.name }}</h1>
-    {% for menu in menus %}
-    <h2>{{ menu.restaurant_name }}</h2>
+    <h1>Menu for {{ menu.restaurant_name }}</h1>
     <img src="{{ menu.image_url }}" alt="Menu Image">
     <p>Minimum Order Amount: ${{ menu.min_order_amount }}</p>
     <p>Average Preparation Time: {{ menu.avg_preparation_time }} minutes</p>
@@ -68,12 +87,12 @@
                 <td><img src="{{ dish.image_url }}" alt="Dish Image" width="100"></td>
                 <td>
                     <button onclick="addToBasket('{{ dish.name }}', {{ dish.price }})">Order</button>
+                    <button onclick="markAsFavorite({{ dish.id }})">Favorite</button>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% endfor %}
 
     <h2>Basket</h2>
     <table border="1">

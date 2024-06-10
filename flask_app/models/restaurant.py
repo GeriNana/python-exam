@@ -54,13 +54,8 @@ class Restaurant:
     @classmethod
     def get_by_location(cls, location):
         query = "SELECT * FROM restaurants WHERE city = %(location)s;"
-        results = connectToMySQL(cls.db_name).query_db(query, {'location': location})
-        restaurants = []
-        for result in results:
-            restaurant = cls(result)
-            restaurant.menus = cls.get_menus(result['restaurant_id'])
-            restaurants.append(restaurant)
-        return restaurants
+        results = connectToMySQL(cls.db_name).query_db(query, {"location": location})
+        return [cls(result) for result in results]
 
     def get_average_preparation_time(self):
         if not self.menus:

@@ -4,20 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Add Menu for Restaurant ID {{ restaurant_id }}</h1>
-    <form action="{{ url_for('menus.add_menu', restaurant_id=restaurant_id) }}" method="POST">
-        <label for="restaurant_name">Restaurant Name:</label>
-        <input type="text" id="restaurant_name" name="restaurant_name" required><br>
-        <label for="image_url">Image URL:</label>
-        <input type="url" id="image_url" name="image_url"><br>
-        <label for="min_order_amount">Minimum Order Amount:</label>
-        <input type="number" id="min_order_amount" name="min_order_amount" step="0.01" required><br>
-        <label for="avg_preparation_time">Average Preparation Time (minutes):</label>
-        <input type="number" id="avg_preparation_time" name="avg_preparation_time" required><br>
-        <button type="submit">Add Menu</button>
-    </form>
-    <a href="{{ url_for('restaurants.restaurant_profile', restaurant_id=restaurant_id) }}">Back to Profile</a>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
+            </div>
+            <div class="menu-and-courier">
+                <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
+                <div class="language-toggle">
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="sq">Shqip</option>
+                    </select>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-row">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Add Menu for Restaurant ID {{ restaurant_id }}</h1>
+        <form action="{{ url_for('menus.add_menu', restaurant_id=restaurant_id) }}" method="POST">
+            <label for="restaurant_name">Restaurant Name:</label>
+            <input type="text" id="restaurant_name" name="restaurant_name" required><br>
+            <label for="image_url">Image URL:</label>
+            <input type="url" id="image_url" name="image_url"><br>
+            <label for="min_order_amount">Minimum Order Amount:</label>
+            <input type="number" id="min_order_amount" name="min_order_amount" step="0.01" required><br>
+            <label for="avg_preparation_time">Average Preparation Time (minutes):</label>
+            <input type="number" id="avg_preparation_time" name="avg_preparation_time" required><br>
+            <button type="submit">Add Menu</button>
+        </form>
+        <a href="{{ url_for('restaurants.restaurant_profile', restaurant_id=restaurant_id) }}">Back to Profile</a>
+    </main>
+
+    <footer>
+        <!-- Footer content -->
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

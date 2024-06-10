@@ -3,37 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>{{ user.username }}'s Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <nav>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('users.logout') }}">Logout</a>
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
+            </div>
+            <div class="menu-and-courier">
+                <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
+                <div class="language-toggle">
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="sq">Shqip</option>
+                    </select>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-row">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
         </nav>
     </header>
 
     <main>
-        <h1>Welcome, {{ user.full_name }}</h1>
-        <h2>Your Details</h2>
-        <p>Email: {{ user.email }}</p>
-        <p>Address: {{ user.address }}</p>
-        <p>City: {{ user.city }}</p>
-        <p>Postal Code: {{ user.postal_code }}</p>
-        <p>Phone: {{ user.phone }}</p>
+        <h1>{{ user.username }}'s Profile</h1>
 
-        <h2>Your Orders</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <p>Full Name: {{ user.full_name }}</p>
+        <p>Email: {{ user.email }}</p>
+
+        <h2>Past Orders</h2>
         <ul>
-            {% for order in orders %}
-            <li>Order #{{ order.id }} - {{ order.status }} - {{ order.total_price }}</li>
+            {% for order in user.past_orders %}
+            <li>Order ID: {{ order.order_id }}, Total: ${{ order.total_price }}</li>
             {% endfor %}
         </ul>
 
-        <h2>Your Favorite Meals</h2>
+        <h2>Favorites</h2>
         <ul>
-            {% for favorite in favorites %}
-            <li>{{ favorite.meal_name }} from {{ favorite.restaurant_name }}</li>
+            {% for favorite in user.favorites %}
+            <li>Dish ID: {{ favorite.dish_id }}</li>
             {% endfor %}
         </ul>
     </main>

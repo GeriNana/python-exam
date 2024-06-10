@@ -4,30 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurants in {{ location }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Restaurants in {{ location }}</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Restaurant Name</th>
-                <th>Average Preparation Time</th>
-                <th>Minimum Order Amount</th>
-                <th>Menu</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for restaurant in restaurants %}
-            <tr>
-                <td>{{ restaurant.name }}</td>
-                <td>{{ restaurant.get_average_preparation_time() }} minutes</td>
-                <td>${{ restaurant.get_min_order_amount() }}</td>
-                <td>
-                    <a href="{{ url_for('restaurants.show_menu', restaurant_id=restaurant.id) }}">View Menu</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
+            </div>
+            <div class="menu-and-courier">
+                <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
+                <div class="language-toggle">
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="sq">Shqip</option>
+                    </select>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-row">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Restaurants in {{ location }}</h1>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Restaurant Name</th>
+                    <th>Average Preparation Time</th>
+                    <th>Minimum Order Amount</th>
+                    <th>Menu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for restaurant in restaurants %}
+                <tr>
+                    <td>{{ restaurant.name }}</td>
+                    <td>{{ restaurant.get_average_preparation_time() }} minutes</td>
+                    <td>${{ restaurant.get_min_order_amount() }}</td>
+                    <td>
+                        {% for menu in restaurant.menus %}
+                        <a href="{{ url_for('restaurants.show_menu', menu_id=menu.id) }}">View Menu</a>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <!-- Footer content -->
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

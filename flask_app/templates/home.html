@@ -28,8 +28,13 @@
             </div>
             <div class="dropdown-menu" id="dropdownMenu">
                 <div class="dropdown-row">
-                    <a href="{{ url_for('users.login') }}">Login</a>
-                    <a href="{{ url_for('users.register') }}">Register</a>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

@@ -1,5 +1,4 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask import flash
 
 class Order:
     db_name = "gastroglide"
@@ -32,4 +31,3 @@ class Order:
         if result:
             return cls(result[0])
         return None
-
