@@ -4,6 +4,8 @@ from flask_app.models.favorite import Favorite
 from flask import flash
 from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
+
 class User:
     db_name = "gastroglide"
 
@@ -53,6 +55,21 @@ class User:
 
     def check_password(self, password):
         return self.password == password
+    
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        query = """
+        SELECT o.order_id, o.user_id, r.name AS restaurant_name, o.order_date, o.total_price,
+            GROUP_CONCAT(d.name SEPARATOR ', ') AS dishes
+        FROM orders o
+        JOIN restaurants r ON o.restaurant_id = r.restaurant_id
+        JOIN order_items oi ON o.order_id = oi.order_id
+        JOIN dishes d ON oi.menu_id = d.menu_id
+        WHERE o.user_id = %(user_id)s
+        GROUP BY o.order_id;
+        """
+        results = connectToMySQL(cls.db_name).query_db(query, {"user_id": user_id})
+        return [cls(row) for row in results] if results else []
 
     @staticmethod
     def validate_registration(form_data):

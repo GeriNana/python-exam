@@ -3,6 +3,7 @@ from flask_app.models.user import User
 from flask_app.models.order import Order
 from flask_app.models.order_item import OrderItem
 from flask_app.models.menu import Menu
+from flask_app.models.favorite import Favorite
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
@@ -31,12 +32,17 @@ def register():
         
         if User.validate_registration(user_data):
             user_id = User.save(user_data)
-            flash("Registration successful!", "success")
-            session['user_id'] = user_id
-            return redirect(url_for('users.profile', user_id=user_id))
+            if user_id:
+                flash("Registration successful!", "success")
+                session['user_id'] = user_id
+                return redirect(url_for('users.profile', user_id=user_id))
+            else:
+                flash("Registration failed. Please try again.", "error")
+                return redirect(url_for('users.register'))
         else:
             return redirect(url_for('users.register'))
     return render_template('register.html')
+
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,22 +75,25 @@ def logout():
 @bp.route('/profile/<int:user_id>')
 def profile(user_id):
     if 'user_id' not in session:
-        print("User not logged in. Redirecting to login page.")
         return redirect(url_for('users.login'))
     
     if session['user_id'] != user_id:
-        print(f"Session user_id: {session['user_id']} does not match requested profile user_id: {user_id}. Redirecting to home page.")
         flash('You do not have permission to view this profile.', 'error')
         return redirect(url_for('index'))
     
     user = User.get_by_id(user_id)
     if not user:
-        print(f"User with ID {user_id} not found. Redirecting to home page.")
         flash('User not found', 'error')
         return redirect(url_for('index'))
     
-    print(f"Displaying profile for user ID: {user_id}")
+    user.past_orders = Order.get_by_user_id(user_id)
+    user.favorites = Favorite.get_by_user_id(user_id)
+    
+    print(f"Past orders for user {user_id}: {user.past_orders}")
+    print(f"Favorites for user {user_id}: {user.favorites}")
+    
     return render_template('profile.html', user=user)
+
 
 @bp.route('/checkout', methods=['GET', 'POST'])
 def checkout():

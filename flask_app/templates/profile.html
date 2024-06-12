@@ -57,19 +57,26 @@
         <p>Email: {{ user.email }}</p>
 
         <h2>Past Orders</h2>
-        <ul>
-            {% for order in user.past_orders %}
-            <li>Order ID: {{ order.order_id }}, Total: ${{ order.total_price }}</li>
+        {% if orders %}
+            <ul>
+            {% for order in orders %}
+                <li>{{ order.restaurant_name }} - {{ order.order_date }} - {{ order.total_price }}</li>
             {% endfor %}
-        </ul>
+            </ul>
+        {% else %}
+            <p>No past orders found.</p>
+        {% endif %}
 
         <h2>Favorites</h2>
-        <ul>
-            {% for favorite in user.favorites %}
-            <li>Dish ID: {{ favorite.dish_id }}</li>
+        {% if favorites %}
+            <ul>
+            {% for favorite in favorites %}
+                <li>{{ favorite.dish_name }} from {{ favorite.restaurant_name }}</li>
             {% endfor %}
-        </ul>
-    </main>
+            </ul>
+        {% else %}
+            <p>No favorites found.</p>
+        {% endif %}
 
     <footer>
         <!-- Footer content -->

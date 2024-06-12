@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+</head>
+<body>
+    <h1>Order Status</h1>
+    <p>Your order is being prepared and will be delivered in approximately <span id="delivery-time"></span> minutes.</p>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            var deliveryAddress = "{{ delivery_address }}";
+            var defaultPrepTime = 20; // default preparation time in minutes
+            
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ 'address': deliveryAddress }, function (results, status) {
+                if (status == 'OK') {
+                    var destination = results[0].geometry.location;
+
+                    // Replace 'restaurant_location' with the actual coordinates of the restaurant
+                    var restaurantLocation = { lat: 40.730610, lng: -73.935242 };
+                    var directionsService = new google.maps.DirectionsService();
+                    var directionsRenderer = new google.maps.DirectionsRenderer();
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 14,
+                        center: restaurantLocation
+                    });
+                    directionsRenderer.setMap(map);
+
+                    var request = {
+                        origin: restaurantLocation,
+                        destination: destination,
+                        travelMode: google.maps.TravelMode.BICYCLING
+                    };
+
+                    directionsService.route(request, function (result, status) {
+                        if (status == 'OK') {
+                            directionsRenderer.setDirections(result);
+                            var travelTime = result.routes[0].legs[0].duration.value / 60; // in minutes
+                            var totalDeliveryTime = defaultPrepTime + travelTime;
+                            document.getElementById('delivery-time').textContent = Math.round(totalDeliveryTime);
+                        }
+                    });
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>

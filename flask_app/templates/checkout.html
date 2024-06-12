@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout</h1>
+    <form action="/pay" method="post">
+        <input type="hidden" name="user_id" id="user_id">
+        <input type="hidden" name="total" id="total">
+        <button type="submit">Pay with PayPal</button>
+    </form>
+
+    <script>
+        document.getElementById('user_id').value = localStorage.getItem('user_id') || 1; // default to 1 for testing
+        document.getElementById('total').value = calculateTotal(); // replace with your total calculation
+        function calculateTotal() {
+            let basket = JSON.parse(localStorage.getItem('basket'));
+            let total = 0;
+            for (let item in basket) {
+                total += basket[item].price * basket[item].quantity;
+            }
+            return total.toFixed(2);
+        }
+    </script>
+</body>
+</html>
