@@ -12,18 +12,20 @@ def add_favorite():
 
     user_id = session['user_id']
     menu_id = request.form.get('menu_id')
+    dish_id = request.form.get('dish_id')
 
-    if menu_id:
-        favorite_data = {
-            "user_id": user_id,
-            "menu_id": menu_id
-        }
-        Favorite.add_favorite(favorite_data)
-        flash("Added to favorites!", "success")
-    else:
-        flash("No menu item specified.", "error")
+    if not menu_id or not dish_id:
+        flash("No menu item or dish specified.", "error")
+        return redirect(url_for('users.user_profile', user_id=user_id))
 
-    return redirect(url_for('users.profile', user_id=user_id))
+    favorite_data = {
+        "user_id": user_id,
+        "menu_id": menu_id,
+        "dish_id": dish_id
+    }
+    Favorite.add_favorite(favorite_data)
+    flash("Added to favorites!", "success")
+    return redirect(url_for('users.user_profile', user_id=user_id))
 
 @bp.route('/remove', methods=['POST'])
 def remove_favorite():
@@ -43,4 +45,3 @@ def remove_favorite():
     Favorite.remove_favorite(data)
     flash('Favorite removed successfully', 'success')
     return redirect(request.referrer)
-

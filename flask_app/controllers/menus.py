@@ -23,6 +23,13 @@ def view_menu(menu_id):
     menu = Menu.get_by_id(menu_id)
     if not menu:
         return "Menu not found", 404
+    return render_template('view_menu.html', menu=menu)
+
+@bp.route('/show_menu/<int:menu_id>')
+def show_menu(menu_id):
+    menu = Menu.get_by_id(menu_id)
+    if not menu:
+        return "Menu not found", 404
     return render_template('show_menu.html', menu=menu)
 
 @bp.route('/edit_menu/<int:menu_id>', methods=['GET', 'POST'])

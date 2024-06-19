@@ -15,7 +15,29 @@
             <div class="menu-and-courier">
                 <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
                 <div class="language-toggle">
-                    <select
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="sq">Shqip</option>
+                    </select>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-row">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
     <main>
         <h1>Edit Menu for {{ menu.restaurant_name }}</h1>
         <form action="{{ url_for('menus.edit_menu', menu_id=menu.id) }}" method="POST">

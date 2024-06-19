@@ -1,31 +1,15 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 
-
-def insert_order(user_id, total):
-    query = "INSERT INTO orders (user_id, total_price) VALUES (%s, %s)"
-    data = (user_id, total)
-
-    connection = connectToMySQL('gastroglide')
-    result = connection.query_db(query, data)
-
-    return result  # Returns the order_id if the insertion was successful
-
-
 class Order:
     db = "gastroglide"
 
     def __init__(self, data):
         self.order_id = data['order_id']
         self.user_id = data['user_id']
-        self.restaurant_id = data['restaurant_id']
+        self.restaurant_name = data['restaurant_name']
         self.order_date = data['order_date']
-        self.delivery_address = data['delivery_address']
-        self.city = data['city']
-        self.postal_code = data['postal_code']
-        self.phone = data['phone']
         self.total_price = data['total_price']
-        self.payment_method = data['payment_method']
-        self.status = data['status']
+        self.dishes = data['dishes']
 
     @classmethod
     def get_by_user_id(cls, user_id):

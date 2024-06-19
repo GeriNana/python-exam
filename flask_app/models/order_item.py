@@ -19,18 +19,27 @@ class OrderItem:
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
+    def get_by_order_id(cls, order_id):
+        query = """
+        SELECT * FROM order_items WHERE order_id = %(order_id)s;
+        """
+        result = connectToMySQL(cls.db_name).query_db(query, {"order_id": order_id})
+        
+        if isinstance(result, list):
+            return [cls(row) for row in result]
+        else:
+            return []
+
+    @classmethod
     def get_by_user_id(cls, user_id):
         query = """
         SELECT order_items.* FROM order_items
         JOIN orders ON order_items.order_id = orders.order_id
         WHERE orders.user_id = %(user_id)s;
         """
-        print(f"Running Query: {query} with user_id: {user_id}")
         result = connectToMySQL(cls.db_name).query_db(query, {"user_id": user_id})
         
         if isinstance(result, list):
-            print(f"Order items found: {result}")
             return [cls(row) for row in result]
         else:
-            print(f"Query returned unexpected result: {result}")
             return []

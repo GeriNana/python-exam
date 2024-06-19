@@ -4,109 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu for {{ menu.restaurant_name }}</title>
-    <script>
-        let basket = {};
-        let totalPrice = 0;
-
-        function addToBasket(dishName, dishPrice) {
-            if (basket[dishName]) {
-                basket[dishName].quantity += 1;
-            } else {
-                basket[dishName] = { price: dishPrice, quantity: 1 };
-            }
-            totalPrice += dishPrice;
-            updateBasket();
-        }
-
-        function updateBasket() {
-            const basketTable = document.getElementById('basket-table-body');
-            basketTable.innerHTML = '';
-            for (const [dishName, dish] of Object.entries(basket)) {
-                const row = document.createElement('tr');
-                const nameCell = document.createElement('td');
-                nameCell.textContent = dishName + ' x' + dish.quantity;
-                const priceCell = document.createElement('td');
-                priceCell.textContent = '$' + (dish.price * dish.quantity).toFixed(2);
-                row.appendChild(nameCell);
-                row.appendChild(priceCell);
-                basketTable.appendChild(row);
-            }
-            document.getElementById('total-price').textContent = '$' + totalPrice.toFixed(2);
-        }
-
-        function checkout() {
-            localStorage.setItem('basket', JSON.stringify(basket));
-            window.location.href = '/orders/checkout';
-        }
-
-        function markAsFavorite(dishId) {
-            fetch('/favorites/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ dish_id: dishId }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Dish marked as favorite!');
-                } else {
-                    alert('Failed to mark as favorite.');
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Menu for {{ menu.restaurant_name }}</h1>
-    <img src="{{ menu.image_url }}" alt="Menu Image">
-    <p>Minimum Order Amount: ${{ menu.min_order_amount }}</p>
-    <p>Average Preparation Time: {{ menu.avg_preparation_time }} minutes</p>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
+            </div>
+            <div class="menu-and-courier">
+                <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
+                <div class="language-toggle">
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="sq">Shqip</option>
+                    </select>
+                </div>
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-row">
+                    {% if session.get('user_id') %}
+                    <a href="{{ url_for('users.user_profile', user_id=session['user_id']) }}">My Profile</a>
 
-    <h3>Dishes</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Dish Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dish in menu.dishes %}
-            <tr>
-                <td>{{ dish.name }}</td>
-                <td>{{ dish.description }}</td>
-                <td>${{ dish.price }}</td>
-                <td><img src="{{ dish.image_url }}" alt="Dish Image" width="100"></td>
-                <td>
-                    <button onclick="addToBasket('{{ dish.name }}', {{ dish.price }})">Order</button>
-                    <button onclick="markAsFavorite({{ dish.id }})">Favorite</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('users.login') }}">Login</a>
+                        <a href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
 
-    <h2>Basket</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Dish Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody id="basket-table-body">
-            <!-- Basket items will be added here by JavaScript -->
-        </tbody>
-    </table>
-    <p>Total: <span id="total-price">$0.00</span></p>
-    <button onclick="checkout()">Checkout</button>
+    <main>
+        <h1>Menu for {{ menu.restaurant_name }}</h1>
+        <img src="{{ menu.image_url }}" alt="Menu Image">
+        <p>Minimum Order Amount: ${{ menu.min_order_amount }}</p>
+        <p>Average Preparation Time: {{ menu.avg_preparation_time }} minutes</p>
+
+        <h3>Dishes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Dish Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dish in menu.dishes %}
+                <tr>
+                    <td>{{ dish.name }}</td>
+                    <td>{{ dish.description }}</td>
+                    <td>${{ dish.price }}</td>
+                    <td><img src="{{ dish.image_url }}" alt="Dish Image" width="100"></td>
+                    <td>
+                        <button onclick="addToBasket('{{ dish.name }}', {{ dish.price }})">Order</button>
+                        <form action="{{ url_for('favorites.add_favorite') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="dish_id" value="{{ dish.id }}">
+                            <input type="hidden" name="menu_id" value="{{ menu.id }}">
+                            <button type="submit">Favorite</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Basket</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Dish Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody id="basket-table-body">
+                <!-- Basket items will be added here by JavaScript -->
+            </tbody>
+        </table>
+        <p>Total: <span id="total-price">$0.00</span></p>
+        <button onclick="checkout()">Checkout</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 GastroGlide. All rights reserved.</p>
+    </footer>
 </body>
 </html>

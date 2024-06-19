@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ user.username }}'s Profile</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -12,71 +12,69 @@
             <div class="logo">
                 <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/gastroGlideLogo1.jpg') }}" alt="GastroGlide Logo"></a>
             </div>
-            <div class="menu-and-courier">
-                <a href="{{ url_for('couriers.apply') }}" class="courier-link">Become a Courier</a>
-                <div class="language-toggle">
-                    <select id="languageSelect">
-                        <option value="en">English</option>
-                        <option value="sq">Shqip</option>
-                    </select>
-                </div>
-                <div class="menu-toggle" id="menuToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <div class="dropdown-row">
-                    {% if session.get('user_id') %}
-                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
-                        <a href="{{ url_for('users.logout') }}">Logout</a>
-                    {% else %}
-                        <a href="{{ url_for('users.login') }}">Login</a>
-                        <a href="{{ url_for('users.register') }}">Register</a>
-                    {% endif %}
-                </div>
-            </div>
+            <!-- Add other navigation items here -->
         </nav>
     </header>
 
     <main>
-        <h1>{{ user.username }}'s Profile</h1>
+        <h1>User Profile</h1>
+        
+        <!-- User Details -->
+        <section>
+            <h2>User Details</h2>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Full Name:</strong> {{ user.full_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </section>
+        
+        <!-- Past Orders -->
+        <section>
+            <h2>Past Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Restaurant</th>
+                        <th>Order Date</th>
+                        <th>Total Price</th>
+                        <th>Dishes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in past_orders %}
+                    <tr>
+                        <td>{{ order.order_id }}</td>
+                        <td>{{ order.restaurant_name }}</td>
+                        <td>{{ order.order_date }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>{{ order.dishes }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-
-        <p>Full Name: {{ user.full_name }}</p>
-        <p>Email: {{ user.email }}</p>
-
-        <h2>Past Orders</h2>
-        {% if orders %}
-            <ul>
-            {% for order in orders %}
-                <li>{{ order.restaurant_name }} - {{ order.order_date }} - {{ order.total_price }}</li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No past orders found.</p>
-        {% endif %}
-
-        <h2>Favorites</h2>
-        {% if favorites %}
-            <ul>
-            {% for favorite in favorites %}
-                <li>{{ favorite.dish_name }} from {{ favorite.restaurant_name }}</li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No favorites found.</p>
-        {% endif %}
+        <!-- User Favorites -->
+        <section>
+            <h2>Favorites</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dish Name</th>
+                        <th>Restaurant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for favorite in favorites %}
+                    <tr>
+                        <td>{{ favorite.dish_name }}</td>
+                        <td>{{ favorite.restaurant_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
 
     <footer>
         <!-- Footer content -->

@@ -1,10 +1,11 @@
 from flask import Blueprint, request, redirect, flash, url_for, render_template, session
-from flask_app.models.user import User
+from flask_app.models.user import User, get_user_by_id
 from flask_app.models.order import Order
 from flask_app.models.order_item import OrderItem
 from flask_app.models.menu import Menu
 from flask_app.models.favorite import Favorite
 from flask_bcrypt import Bcrypt
+from flask_app.order_utils import insert_order, get_past_orders
 
 bcrypt = Bcrypt()
 bp = Blueprint('users', __name__, url_prefix='/users')
@@ -35,14 +36,13 @@ def register():
             if user_id:
                 flash("Registration successful!", "success")
                 session['user_id'] = user_id
-                return redirect(url_for('users.profile', user_id=user_id))
+                return redirect(url_for('users.user_profile', user_id=user_id))
             else:
                 flash("Registration failed. Please try again.", "error")
                 return redirect(url_for('users.register'))
         else:
             return redirect(url_for('users.register'))
     return render_template('register.html')
-
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -56,7 +56,7 @@ def login():
                 if bcrypt.check_password_hash(user.password, password):
                     session['user_id'] = user.id
                     flash('Login successful!', 'success')
-                    return redirect(url_for('users.profile', user_id=user.id))
+                    return redirect(url_for('users.user_profile', user_id=user.id))
                 else:
                     flash('Invalid email or password', 'error')
             except ValueError:
@@ -73,26 +73,11 @@ def logout():
     return redirect(url_for('index'))
 
 @bp.route('/profile/<int:user_id>')
-def profile(user_id):
-    if 'user_id' not in session:
-        return redirect(url_for('users.login'))
-    
-    if session['user_id'] != user_id:
-        flash('You do not have permission to view this profile.', 'error')
-        return redirect(url_for('index'))
-    
-    user = User.get_by_id(user_id)
-    if not user:
-        flash('User not found', 'error')
-        return redirect(url_for('index'))
-    
-    user.past_orders = Order.get_by_user_id(user_id)
-    user.favorites = Favorite.get_by_user_id(user_id)
-    
-    print(f"Past orders for user {user_id}: {user.past_orders}")
-    print(f"Favorites for user {user_id}: {user.favorites}")
-    
-    return render_template('profile.html', user=user)
+def user_profile(user_id):
+    user = get_user_by_id(user_id)
+    past_orders = get_past_orders(user_id)
+    favorites = Favorite.get_by_user_id(user_id)  # Ensure this fetches favorite items correctly
+    return render_template('profile.html', user=user, past_orders=past_orders, favorites=favorites)
 
 
 @bp.route('/checkout', methods=['GET', 'POST'])

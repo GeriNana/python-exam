@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Delivery Status</h1>
+        <p>Your order has been placed successfully.</p>
+        <p>Delivery Address: {{ delivery_address }}</p>
+        <p>Postal Code: {{ postal_code }}</p>
+        <p>Phone Number: {{ phone }}</p>
+        <p>Payment Method: {{ payment_method }}</p>
+        <p>Thank you for using our service!</p>
+    </div>
+</body>
+</html>
