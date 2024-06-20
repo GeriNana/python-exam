@@ -1,6 +1,5 @@
 from flask import Blueprint, request, redirect, flash, url_for, session, render_template
 from flask_app.models.favorite import Favorite
-from flask_app.config.mysqlconnection import connectToMySQL
 
 bp = Blueprint('favorites', __name__)
 
@@ -35,11 +34,12 @@ def remove_favorite():
 
     data = {
         "user_id": session['user_id'],
-        "menu_id": request.form.get('menu_id')
+        "menu_id": request.form.get('menu_id'),
+        "dish_id": request.form.get('dish_id')
     }
 
-    if not data['menu_id']:
-        flash('No menu ID provided', 'error')
+    if not data['menu_id'] or not data['dish_id']:
+        flash('No menu ID or dish ID provided', 'error')
         return redirect(request.referrer)
 
     Favorite.remove_favorite(data)

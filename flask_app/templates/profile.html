@@ -62,6 +62,7 @@
                     <tr>
                         <th>Dish Name</th>
                         <th>Restaurant</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +70,13 @@
                     <tr>
                         <td>{{ favorite.dish_name }}</td>
                         <td>{{ favorite.restaurant_name }}</td>
+                        <td>
+                            <form action="{{ url_for('favorites.remove_favorite') }}" method="POST">
+                                <input type="hidden" name="menu_id" value="{{ favorite.menu_id }}">
+                                <input type="hidden" name="dish_id" value="{{ favorite.dish_id }}">
+                                <button type="submit">Remove</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
