@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, request, session, flash
 from flask_app.models.menu import Menu
+from flask_app.models.dish import Dish
 from flask_app.models.restaurant import Restaurant
+from flask_app.models.order_item import OrderItem
 
 bp = Blueprint('menus', __name__, url_prefix='/menus')
 
@@ -28,9 +30,24 @@ def view_menu(menu_id):
 @bp.route('/show_menu/<int:menu_id>')
 def show_menu(menu_id):
     menu = Menu.get_by_id(menu_id)
-    if not menu:
-        return "Menu not found", 404
-    return render_template('show_menu.html', menu=menu)
+    dishes = Dish.get_by_menu_id(menu_id)
+
+    basket = []
+    total_price = 0.0
+
+    if 'order_id' in session:
+        order_id = session['order_id']
+        order_items = OrderItem.get_by_order_id(order_id)
+        for item in order_items:
+            dish = Dish.get_by_id(item.dish_id)
+            basket.append({
+                'dish_name': dish.name,
+                'price': float(item.price),  # Ensure price is float
+                'quantity': item.quantity
+            })
+            total_price += float(item.price) * item.quantity
+
+    return render_template('show_menu.html', menu=menu, dishes=dishes, basket=basket, total_price=total_price)
 
 @bp.route('/edit_menu/<int:menu_id>', methods=['GET', 'POST'])
 def edit_menu(menu_id):

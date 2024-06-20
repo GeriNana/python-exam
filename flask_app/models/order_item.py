@@ -4,17 +4,18 @@ class OrderItem:
     db_name = "gastroglide"
 
     def __init__(self, data):
-        self.id = data['id']
-        self.order_id = data['order_id']
-        self.menu_id = data['menu_id']
-        self.quantity = data.get('quantity', 1)
-        self.price = data.get('price', 0.0)
+        self.id = data.get('id')
+        self.order_id = data.get('order_id')
+        self.menu_id = data.get('menu_id')
+        self.dish_id = data.get('dish_id')
+        self.quantity = data.get('quantity')
+        self.price = data.get('price')
 
     @classmethod
     def save(cls, data):
         query = """
-        INSERT INTO order_items (order_id, menu_id, quantity, price) 
-        VALUES (%(order_id)s, %(menu_id)s, %(quantity)s, %(price)s);
+        INSERT INTO order_items (order_id, menu_id, dish_id, quantity, price)
+        VALUES (%(order_id)s, %(menu_id)s, %(dish_id)s, %(quantity)s, %(price)s);
         """
         return connectToMySQL(cls.db_name).query_db(query, data)
 
@@ -23,23 +24,8 @@ class OrderItem:
         query = """
         SELECT * FROM order_items WHERE order_id = %(order_id)s;
         """
-        result = connectToMySQL(cls.db_name).query_db(query, {"order_id": order_id})
-        
-        if isinstance(result, list):
-            return [cls(row) for row in result]
-        else:
-            return []
-
-    @classmethod
-    def get_by_user_id(cls, user_id):
-        query = """
-        SELECT order_items.* FROM order_items
-        JOIN orders ON order_items.order_id = orders.order_id
-        WHERE orders.user_id = %(user_id)s;
-        """
-        result = connectToMySQL(cls.db_name).query_db(query, {"user_id": user_id})
-        
-        if isinstance(result, list):
-            return [cls(row) for row in result]
-        else:
-            return []
+        results = connectToMySQL(cls.db_name).query_db(query, {'order_id': order_id})
+        order_items = []
+        for result in results:
+            order_items.append(cls(result))
+        return order_items

@@ -30,11 +30,10 @@
                 <div class="dropdown-row">
                     {% if session.get('user_id') %}
                     <a href="{{ url_for('users.user_profile', user_id=session['user_id']) }}">My Profile</a>
-
-                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    <a href="{{ url_for('users.logout') }}">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('users.login') }}">Login</a>
-                        <a href="{{ url_for('users.register') }}">Register</a>
+                    <a href="{{ url_for('users.login') }}">Login</a>
+                    <a href="{{ url_for('users.register') }}">Register</a>
                     {% endif %}
                 </div>
             </div>
@@ -59,14 +58,19 @@
                 </tr>
             </thead>
             <tbody>
-                {% for dish in menu.dishes %}
+                {% for dish in dishes %}
                 <tr>
                     <td>{{ dish.name }}</td>
                     <td>{{ dish.description }}</td>
                     <td>${{ dish.price }}</td>
                     <td><img src="{{ dish.image_url }}" alt="Dish Image" width="100"></td>
                     <td>
-                        <button onclick="addToBasket('{{ dish.name }}', {{ dish.price }})">Order</button>
+                        <form action="{{ url_for('orders.add_to_basket') }}" method="POST">
+                            <input type="hidden" name="dish_id" value="{{ dish.id }}">
+                            <input type="hidden" name="menu_id" value="{{ menu.id }}">
+                            <input type="hidden" name="price" value="{{ dish.price }}">
+                            <button type="submit">Order</button>
+                        </form>
                         <form action="{{ url_for('favorites.add_favorite') }}" method="POST" style="display:inline;">
                             <input type="hidden" name="dish_id" value="{{ dish.id }}">
                             <input type="hidden" name="menu_id" value="{{ menu.id }}">
@@ -83,15 +87,26 @@
             <thead>
                 <tr>
                     <th>Dish Name</th>
+                    <th>Quantity</th>
                     <th>Price</th>
+                    <th>Total</th>
                 </tr>
             </thead>
-            <tbody id="basket-table-body">
-                <!-- Basket items will be added here by JavaScript -->
+            <tbody>
+                {% for item in basket %}
+                <tr>
+                    <td>{{ item.dish_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.price * item.quantity }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
-        <p>Total: <span id="total-price">$0.00</span></p>
-        <button onclick="checkout()">Checkout</button>
+        <p>Total: ${{ total_price }}</p>
+        <form action="{{ url_for('orders.checkout') }}" method="GET">
+            <button type="submit">Checkout</button>
+        </form>
     </main>
 
     <footer>
