@@ -42,6 +42,7 @@
                     <td>
                         <a href="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}">Edit</a>
                         <form action="{{ url_for('dishes.delete_dish', dish_id=dish.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="menu_id" value="{{ menu.id }}">
                             <button type="submit">Delete</button>
                         </form>
                     </td>

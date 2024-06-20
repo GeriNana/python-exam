@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, flash, url_for, render_template, session
-from flask_app.models.user import User, get_user_by_id
+from flask_app.models.user import User
 from flask_app.models.order import Order
 from flask_app.models.order_item import OrderItem
 from flask_app.models.menu import Menu
@@ -74,11 +74,10 @@ def logout():
 
 @bp.route('/profile/<int:user_id>')
 def user_profile(user_id):
-    user = get_user_by_id(user_id)
+    user = User.get_user_by_id(user_id)
     past_orders = get_past_orders(user_id)
     favorites = Favorite.get_by_user_id(user_id)  # Ensure this fetches favorite items correctly
     return render_template('profile.html', user=user, past_orders=past_orders, favorites=favorites)
-
 
 @bp.route('/checkout', methods=['GET', 'POST'])
 def checkout():

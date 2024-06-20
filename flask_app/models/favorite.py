@@ -41,3 +41,9 @@ class Favorite:
         WHERE user_id = %(user_id)s AND menu_id = %(menu_id)s AND dish_id = %(dish_id)s;
         """
         return connectToMySQL(cls.db_name).query_db(query, data)
+
+
+    @classmethod
+    def delete_by_dish_id(cls, dish_id):
+        query = "DELETE FROM user_favorites WHERE dish_id = %(dish_id)s;"
+        return connectToMySQL(cls.db_name).query_db(query, {'dish_id': dish_id})

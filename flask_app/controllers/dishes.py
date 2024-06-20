@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, redirect, request, flash
+from flask import Blueprint, render_template, redirect, request, flash, url_for
 from flask_app.models.dish import Dish
+from flask_app.models.order_item import OrderItem
+from flask_app.models.favorite import Favorite
+
 
 bp = Blueprint('dishes', __name__, url_prefix='/dishes')
 
@@ -36,8 +39,17 @@ def edit_dish(dish_id):
 
 @bp.route('/delete_dish/<int:dish_id>', methods=['POST'])
 def delete_dish(dish_id):
-    dish = Dish.get_by_id(dish_id)
-    if not dish:
-        return "Dish not found", 404
-    Dish.delete(dish_id)
-    return redirect(f'/menus/view_menu/{dish.menu_id}')
+    try:
+        # Delete related order items
+        OrderItem.delete_by_dish_id(dish_id)
+        
+        # Delete related user favorites
+        Favorite.delete_by_dish_id(dish_id)
+
+        # Delete the dish
+        Dish.delete(dish_id)
+        flash('Dish deleted successfully.', 'success')
+    except Exception as e:
+        flash(f'Something went wrong: {e}', 'error')
+
+    return redirect(url_for('menus.view_menu', menu_id=request.form['menu_id']))

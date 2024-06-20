@@ -1,60 +1,47 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app.models.order_item import OrderItem
-from flask_app.models.favorite import Favorite
+from flask_app.models.order import Order
 from flask import flash
-from flask_bcrypt import Bcrypt
-
-bcrypt = Bcrypt()
 
 class User:
     db_name = "gastroglide"
 
     def __init__(self, data):
-        self.id = data['user_id']
-        self.username = data['username']
+        self.id = data.get('user_id')
+        self.username = data.get('username')
+        self.password = data.get('password')
+        self.email = data.get('email')
         self.full_name = data.get('full_name')
-        self.email = data['email']
-        self.password = data['password']
         self.address = data.get('address')
         self.city = data.get('city')
         self.postal_code = data.get('postal_code')
         self.phone = data.get('phone')
-        self.past_orders = []
-        self.favorites = []
+        self.preferred_payment_method = data.get('preferred_payment_method')
 
     @classmethod
-    def save(cls, data):
-        hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-        data['password'] = hashed_password
-        query = """
-        INSERT INTO users (username, full_name, email, password, address, city, postal_code, phone)
-        VALUES (%(username)s, %(full_name)s, %(email)s, %(password)s, %(address)s, %(city)s, %(postal_code)s, %(phone)s);
-        """
-        user_id = connectToMySQL(cls.db_name).query_db(query, data)
-        return user_id
-
-    @classmethod
-    def get_by_id(cls, user_id):
+    def get_user_by_id(cls, user_id):
         query = "SELECT * FROM users WHERE user_id = %(user_id)s;"
-        result = connectToMySQL(cls.db_name).query_db(query, {"user_id": user_id})
+        result = connectToMySQL(cls.db_name).query_db(query, {'user_id': user_id})
         if result:
-            user_data = result[0]
-            user = cls(user_data)
-            user.past_orders = OrderItem.get_by_user_id(user_id)
-            user.favorites = Favorite.get_by_user_id(user_id)
+            user = cls(result[0])
+            user.past_orders = Order.get_by_user_id(user_id)
             return user
         return None
 
     @classmethod
     def get_by_email(cls, email):
         query = "SELECT * FROM users WHERE email = %(email)s;"
-        result = connectToMySQL(cls.db_name).query_db(query, {"email": email})
+        result = connectToMySQL(cls.db_name).query_db(query, {'email': email})
         if result:
             return cls(result[0])
         return None
 
-    def check_password(self, password):
-        return bcrypt.check_password_hash(self.password, password)
+    @classmethod
+    def save(cls, data):
+        query = """
+        INSERT INTO users (username, full_name, email, password)
+        VALUES (%(username)s, %(full_name)s, %(email)s, %(password)s);
+        """
+        return connectToMySQL(cls.db_name).query_db(query, data)
 
     @staticmethod
     def validate_registration(form_data):
@@ -75,7 +62,7 @@ class User:
         else:
             email_query = "SELECT * FROM users WHERE email = %(email)s;"
             email_data = {"email": form_data['email']}
-            email_results = connectToMySQL(User.db_name).query_db(email_query, email_data)
+            email_results = connectToMySQL('gastroglide').query_db(email_query, email_data)
             if len(email_results) > 0:
                 is_valid = False
                 errors.append("Email is already in use.")
@@ -90,13 +77,4 @@ class User:
 
         return is_valid
 
-def get_user_by_id(user_id):
-    query = "SELECT * FROM users WHERE user_id = %(user_id)s;"
-    result = connectToMySQL(User.db_name).query_db(query, {"user_id": user_id})
-    if result:
-        user_data = result[0]
-        user = User(user_data)
-        user.past_orders = OrderItem.get_by_user_id(user_id)
-        user.favorites = Favorite.get_by_user_id(user_id)
-        return user
-    return None
+

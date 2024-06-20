@@ -26,9 +26,7 @@ class Order:
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        query = """
-        SELECT * FROM orders WHERE user_id = %(user_id)s;
-        """
+        query = "SELECT * FROM orders WHERE user_id = %(user_id)s;"
         results = connectToMySQL(cls.db_name).query_db(query, {'user_id': user_id})
         orders = []
         for result in results:
@@ -37,9 +35,7 @@ class Order:
 
     @classmethod
     def get_by_order_id(cls, order_id):
-        query = """
-        SELECT * FROM orders WHERE order_id = %(order_id)s;
-        """
+        query = "SELECT * FROM orders WHERE order_id = %(order_id)s;"
         result = connectToMySQL(cls.db_name).query_db(query, {'order_id': order_id})
         if result:
             return cls(result[0])

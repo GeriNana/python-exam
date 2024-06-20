@@ -29,3 +29,19 @@ class OrderItem:
         for result in results:
             order_items.append(cls(result))
         return order_items
+
+    @classmethod
+    def get_by_dish_id(cls, dish_id):
+        query = "SELECT * FROM order_items WHERE dish_id = %(dish_id)s;"
+        results = connectToMySQL(cls.db_name).query_db(query, {'dish_id': dish_id})
+        return [cls(result) for result in results]
+
+    @classmethod
+    def delete(cls, order_item_id):
+        query = "DELETE FROM order_items WHERE id = %(id)s;"
+        return connectToMySQL(cls.db_name).query_db(query, {'id': order_item_id})
+    
+    @classmethod
+    def delete_by_dish_id(cls, dish_id):
+        query = "DELETE FROM order_items WHERE dish_id = %(dish_id)s;"
+        return connectToMySQL(cls.db_name).query_db(query, {'dish_id': dish_id})

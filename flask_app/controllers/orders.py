@@ -1,9 +1,9 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session, flash, jsonify
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models.order import Order
+from flask_app.models.user import User
 import requests
 from flask_app.models.order_item import OrderItem
-from flask_app.models.user import get_user_by_id
 import datetime
 
 orders_bp = Blueprint('orders', __name__)
@@ -119,7 +119,7 @@ def view_basket():
         return redirect(url_for('menus.show_menu'))
 
     order_items = OrderItem.get_by_order_id(order_id)
-    total_price = sum(item.price * item.quantity for item in order_items)
+    total_price = sum(float(item.price) * item.quantity for item in order_items)
 
     return render_template('basket.html', order_items=order_items, total_price=total_price)
 
@@ -127,13 +127,13 @@ def view_basket():
 def checkout():
     if 'user_id' in session:
         user_id = session['user_id']
-        user_data = get_user_by_id(user_id)
+        user_data = User.get_user_by_id(user_id)  # Access the method through the User class
         order_id = session.get('order_id')
         total_price = 0.0
 
         if order_id:
             order_items = OrderItem.get_by_order_id(order_id)
-            total_price = sum(item.price * item.quantity for item in order_items)
+            total_price = sum(float(item.price) * item.quantity for item in order_items)
 
         return render_template('checkout.html', user_logged_in=True, user_address=user_data.address,
                                user_postal_code=user_data.postal_code, user_phone=user_data.phone,
@@ -182,7 +182,7 @@ def complete_checkout():
 
     if 'user_id' in session:
         user_id = session['user_id']
-        user_data = get_user_by_id(user_id)
+        user_data = User.get_user_by_id(user_id)  # Access the method through the User class
         address = user_data.address
         postal_code = user_data.postal_code
         phone = user_data.phone
