@@ -69,17 +69,35 @@ class Restaurant:
         min_order = min(menu.min_order_amount for menu in self.menus if menu.min_order_amount)
         return min_order if self.menus else 0
 
+
+
+    @classmethod
+    def update(cls, data):
+        query = """
+        UPDATE restaurants 
+        SET name=%(name)s, address=%(address)s, city=%(city)s, postal_code=%(postal_code)s, phone=%(phone)s, email=%(email)s
+        WHERE restaurant_id=%(id)s;
+        """
+        return connectToMySQL(cls.db_name).query_db(query, data)
+    
+    @classmethod
+    def delete(cls, restaurant_id):
+        query = "DELETE FROM restaurants WHERE restaurant_id = %(restaurant_id)s;"
+        data = {"restaurant_id": restaurant_id}
+        return connectToMySQL(cls.db_name).query_db(query, data)
+
+
+
+
     @staticmethod
     def validate_registration(form_data):
         is_valid = True
         errors = []
 
-        # Check name length
         if len(form_data['name']) < 2:
             is_valid = False
             errors.append("Name must be at least 2 characters.")
 
-        # Check if email is valid and unique
         if 'email' not in form_data or not form_data['email']:
             is_valid = False
             errors.append("Email is required.")
@@ -91,22 +109,18 @@ class Restaurant:
                 is_valid = False
                 errors.append("Email is already in use.")
 
-        # Check if phone number is provided
         if 'phone' not in form_data or not form_data['phone']:
             is_valid = False
             errors.append("Phone number is required.")
 
-        # Check address length
         if 'address' in form_data and form_data['address'] and len(form_data['address']) < 5:
             is_valid = False
             errors.append("Address must be at least 5 characters.")
 
-        # Check city length
         if 'city' in form_data and form_data['city'] and len(form_data['city']) < 2:
             is_valid = False
             errors.append("City must be at least 2 characters.")
 
-        # Check postal code length
         if 'postal_code' in form_data and form_data['postal_code'] and len(form_data['postal_code']) < 3:
             is_valid = False
             errors.append("Postal code must be at least 3 characters.")

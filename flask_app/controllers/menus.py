@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, request, session, flash
+from flask import Blueprint, render_template, redirect, request, session, flash, url_for
 from flask_app.models.menu import Menu
 from flask_app.models.dish import Dish
 from flask_app.models.restaurant import Restaurant
 from flask_app.models.order_item import OrderItem
+from flask_app.models.favorite import Favorite
 
 bp = Blueprint('menus', __name__, url_prefix='/menus')
 
@@ -68,8 +69,26 @@ def edit_menu(menu_id):
 
 @bp.route('/delete_menu/<int:menu_id>', methods=['POST'])
 def delete_menu(menu_id):
-    menu = Menu.get_by_id(menu_id)
-    if not menu:
-        return "Menu not found", 404
-    Menu.delete(menu_id)
-    return redirect(f'/restaurants/profile/{menu.restaurant_id}')
+    try:
+        # Debug statement to print the form data
+        print("Form data:", request.form)
+        
+        # Get all dishes related to the menu
+        dishes = Dish.get_by_menu_id(menu_id)
+        
+        # Delete all related order items and user favorites
+        for dish in dishes:
+            OrderItem.delete_by_dish_id(dish.id)
+            Favorite.delete_by_dish_id(dish.id)
+        
+        # Delete all dishes related to the menu
+        for dish in dishes:
+            Dish.delete(dish.id)
+        
+        # Delete the menu
+        Menu.delete(menu_id)
+        flash('Menu and all related dishes deleted successfully.', 'success')
+    except Exception as e:
+        flash(f'Something went wrong: {e}', 'error')
+
+    return redirect(url_for('restaurants.profile', restaurant_id=request.form['restaurant_id']))

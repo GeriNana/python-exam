@@ -1,32 +1,47 @@
 import os
 from flask import Flask, render_template, redirect, request, url_for, session, jsonify
 from flask_mail import Mail, Message
+from flask_sqlalchemy import SQLAlchemy
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app.controllers import users, restaurants, menus, dishes, favorites
+from flask_app.controllers import users, restaurants, menus, dishes, favorites, couriers
 from flask_app.controllers.orders import orders_bp
-from flask_app.controllers.couriers import couriers_bp  # Ensure this is correctly imported
+from flask_app.controllers.couriers import couriers_bp 
 import paypalrestsdk
 import requests
-
+from settings import Settings
+import logging
+from flask_bcrypt import Bcrypt
+import json
 app = Flask(__name__, template_folder='flask_app/templates', static_folder='flask_app/static')
-app.secret_key = 'your_secret_key'  # Change this to a real secret key
+bcrypt = Bcrypt(app)
 
-# Email Configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'gastroglide.albania@gmail.com'
-app.config['MAIL_PASSWORD'] = 'blummen2024'
-mail = Mail(app)  # This initializes your Mail object
+app.config.from_object('settings.Settings')
 
-paypalrestsdk.configure({
-    "mode": "sandbox",  # sandbox or live
-    "client_id": "YOUR_PAYPAL_CLIENT_ID",
-    "client_secret": "YOUR_PAYPAL_CLIENT_SECRET"
-})
-@app.route('/')
+mail = Mail(app)
+
+logging.basicConfig(level=logging.DEBUG)
+
+@app.route('/index')
 def index():
-    return render_template('home.html')  # Ensure 'home.html' exists in your templates directory
+    return redirect(url_for('home'))
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/language/<lang>', methods=['GET'])
+def get_language(lang):
+    try:
+        with open(f'translations/{lang}.json', 'r', encoding='utf-8') as f:
+            translations = json.load(f)
+        return jsonify(translations)
+    except FileNotFoundError:
+        return jsonify({"error": "Language file not found"}), 404
+
+
+
+# Set bcrypt attribute in couriers blueprint
+couriers.bcrypt = bcrypt
 
 # Blueprint registration
 app.register_blueprint(users.bp, url_prefix='/users')
@@ -34,7 +49,7 @@ app.register_blueprint(restaurants.bp, url_prefix='/restaurants')
 app.register_blueprint(menus.bp, url_prefix='/menus')
 app.register_blueprint(orders_bp, url_prefix='/orders')
 app.register_blueprint(favorites.bp, url_prefix='/favorites')
-app.register_blueprint(couriers_bp, url_prefix='/couriers')  # Correctly reference the Blueprint
+app.register_blueprint(couriers_bp, url_prefix='/couriers') 
 app.register_blueprint(dishes.bp, url_prefix='/dishes')
 
 if __name__ == "__main__":

@@ -50,6 +50,10 @@
                 {% endfor %}
             </tbody>
         </table>
+        <form action="{{ url_for('menus.delete_menu', menu_id=menu.id) }}" method="POST" style="display:inline;">
+            <input type="hidden" name="restaurant_id" value="{{ menu.restaurant_id }}">
+            <button type="submit">Delete Menu</button>
+        </form>
         <a href="{{ url_for('dishes.add_dish', menu_id=menu.id) }}">Add Dish</a>
     </main>
 

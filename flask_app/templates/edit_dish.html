@@ -29,37 +29,32 @@
             <div class="dropdown-menu" id="dropdownMenu">
                 <div class="dropdown-row">
                     {% if session.get('user_id') %}
-                        <a href="{{ url_for('users.profile', user_id=session['user_id']) }}">My Profile</a>
-                        <a href="{{ url_for('users.logout') }}">Logout</a>
+                    <a href="{{ url_for('users.user_profile', user_id=session['user_id']) }}">My Profile</a>
+                    <a href="{{ url_for('users.logout') }}">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('users.login') }}">Login</a>
-                        <a href="{{ url_for('users.register') }}">Register</a>
+                    <a href="{{ url_for('users.login') }}">Login</a>
+                    <a href="{{ url_for('users.register') }}">Register</a>
                     {% endif %}
                 </div>
             </div>
         </nav>
     </header>
-
     <main>
         <h1>Edit Dish</h1>
-        <form action="{{ url_for('dishes.edit_dish', dish_id=dish.id) }}" method="POST">
-            <label for="name">Dish Name:</label>
-            <input type="text" id="name" name="name" value="{{ dish.name }}" required><br>
+        <form action="{{ url_for('dishes.update_dish', dish_id=dish.id) }}" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ dish.name }}" required>
             <label for="description">Description:</label>
-            <textarea id="description" name="description">{{ dish.description }}</textarea><br>
+            <textarea id="description" name="description" required>{{ dish.description }}</textarea>
             <label for="price">Price:</label>
-            <input type="number" id="price" name="price" step="0.01" value="{{ dish.price }}" required><br>
+            <input type="number" step="0.01" id="price" name="price" value="{{ dish.price }}" required>
             <label for="image_url">Image URL:</label>
-            <input type="url" id="image_url" name="image_url" value="{{ dish.image_url }}"><br>
-            <button type="submit">Update Dish</button>
+            <input type="text" id="image_url" name="image_url" value="{{ dish.image_url }}" required>
+            <button type="submit">Update</button>
         </form>
-        <a href="{{ url_for('menus.view_menu', menu_id=dish.menu_id) }}">Back to Menu</a>
     </main>
-
     <footer>
-        <!-- Footer content -->
+        <p>&copy; 2024 GastroGlide. All rights reserved.</p>
     </footer>
-
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -37,16 +37,31 @@ def edit_dish(dish_id):
         return redirect(f'/menus/view_menu/{dish.menu_id}')
     return render_template('edit_dish.html', dish=dish)
 
+@bp.route('/update_dish/<int:dish_id>', methods=['POST'])
+def update_dish(dish_id):
+    dish = Dish.get_by_id(dish_id)
+    if not dish:
+        return redirect(url_for('menus.view_menu', menu_id=dish.menu_id))
+    
+    data = {
+        'name': request.form.get('name'),
+        'description': request.form.get('description'),
+        'price': request.form.get('price'),
+        'image_url': request.form.get('image_url')
+    }
+
+    if not dish.save(data):
+        flash('An error occurred while updating the dish.', 'error')
+    
+    return redirect(url_for('menus.view_menu', menu_id=dish.menu_id))
+
 @bp.route('/delete_dish/<int:dish_id>', methods=['POST'])
 def delete_dish(dish_id):
     try:
-        # Delete related order items
         OrderItem.delete_by_dish_id(dish_id)
         
-        # Delete related user favorites
         Favorite.delete_by_dish_id(dish_id)
 
-        # Delete the dish
         Dish.delete(dish_id)
         flash('Dish deleted successfully.', 'success')
     except Exception as e:

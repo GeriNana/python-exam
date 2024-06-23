@@ -41,6 +41,12 @@ class Dish:
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
+    def get_by_menu_id(cls, menu_id):
+        query = "SELECT * FROM dishes WHERE menu_id = %(menu_id)s;"
+        results = connectToMySQL(cls.db_name).query_db(query, {'menu_id': menu_id})
+        return [cls(result) for result in results]
+
+    @classmethod
     def delete(cls, dish_id):
-        query = "DELETE FROM dishes WHERE id = %(dish_id)s;"
-        return connectToMySQL(cls.db_name).query_db(query, {"dish_id": dish_id})
+        query = "DELETE FROM dishes WHERE id = %(id)s;"
+        return connectToMySQL(cls.db_name).query_db(query, {'id': dish_id})

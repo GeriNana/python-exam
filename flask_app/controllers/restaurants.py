@@ -73,3 +73,47 @@ def show_menu(menu_id):
     if not menu:
         return "Menu not found", 404
     return render_template('show_menu.html', menu=menu)
+
+
+@bp.route('/edit_profile/<int:restaurant_id>', methods=['GET', 'POST'])
+def edit_profile(restaurant_id):
+    if 'user_id' not in session:
+        flash('You need to be logged in to access this page.')
+        return redirect(url_for('users.login'))
+    
+    restaurant = Restaurant.get_by_id(restaurant_id)
+    if not restaurant:
+        flash('Restaurant not found.')
+        return redirect(url_for('restaurants.profile', restaurant_id=restaurant_id))
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        address = request.form['address']
+        city = request.form['city']
+        postal_code = request.form['postal_code']
+        phone = request.form['phone']
+        email = request.form['email']
+
+        if email != restaurant.email and Restaurant.get_by_email(email):
+            flash('Email is already in use.')
+            return redirect(url_for('restaurants.edit_profile', restaurant_id=restaurant_id))
+
+        data = {
+            'id': restaurant_id,
+            'name': name,
+            'address': address,
+            'city': city,
+            'postal_code': postal_code,
+            'phone': phone,
+            'email': email
+        }
+        Restaurant.update(data)
+        flash('Profile updated successfully.')
+        return redirect(url_for('restaurants.restaurant_profile', restaurant_id=restaurant_id))
+    
+    return render_template('edit_profile.html', restaurant=restaurant)
+@bp.route('/delete_account/<int:restaurant_id>', methods=['POST'])
+def delete_account(restaurant_id):
+    Restaurant.delete(restaurant_id)
+    flash("Account deleted successfully.", "success")
+    return redirect(url_for('index'))

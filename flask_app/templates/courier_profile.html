@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Courier Profile</title>
+    <link rel="stylesheet" href="../static/css/courier.css">
+</head>
+<body>
+    <h1>Profile</h1>
+    <div class="profile-container">
+        <p>Full Name: {{ courier.full_name }}</p>
+        <p>Email: {{ courier.email }}</p>
+        <p>Phone: {{ courier.phone }}</p>
+        <p>Address: {{ courier.address }}</p>
+        <p>City: {{ courier.city }}</p>
+        <p>Postal Code: {{ courier.postal_code }}</p>
+        <p>Vehicle Type: {{ courier.vehicle_type }}</p>
+
+        <a href="{{ url_for('couriers.edit_profile') }}">Edit Profile</a>
+        <form action="{{ url_for('couriers.delete_profile') }}" method="POST">
+            <button type="submit">Delete Profile</button>
+        </form>
+        <a href="{{ url_for('couriers.logout') }}">Logout</a>
+    </div>
+</body>
+</html>

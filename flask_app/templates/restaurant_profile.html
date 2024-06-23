@@ -23,6 +23,11 @@
         <p>Phone: {{ restaurant.phone }}</p>
         <p>Email: {{ restaurant.email }}</p>
 
+        <a href="{{ url_for('restaurants.edit_profile', restaurant_id=restaurant.id) }}">Edit Profile</a>
+        <form action="{{ url_for('restaurants.delete_account', restaurant_id=restaurant.id) }}" method="POST" style="display:inline;">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete your account?');">Delete Account</button>
+        </form>
+
         <h2>Menus</h2>
         <table border="1">
             <thead>

@@ -58,7 +58,9 @@
             {% if messages %}
                 <ul>
                     {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
+                        {% if category == 'register' %}
+                            <li class="{{ category }}">{{ message }}</li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             {% endif %}
